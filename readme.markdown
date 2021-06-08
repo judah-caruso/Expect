@@ -7,18 +7,38 @@ Compile-time testing module for the Jai language.
 ```c++
 #import "Expect";
 
+add :: (x: int, y: int) -> int { return x + y; }
+sub :: (x: int, y: int) -> int { return x - y; }
+
 #run {
-    set("Some group of tests", #code {
-        expect(1 == 1, "One did not equal one!");
-        expect(1 == 2, should_fail = true); // Allow intentionally failing tests
-        expect(call_to_thing(), "Call to thing failed!");
+    set("Add tests", #code {
+        x := add(10, 20);
+        y := *x;
+        z := *x;
+
+        expect(y == z);
+        expect(z != null && <<y == 30);
+        expect(add(1, 2) == 3);
     });
 
-    // You can choose to run all tests (regardless of if previous fail or not)
-    set("Some tests may fail", exit_on_first_fail = false, #code {
-        expect(-1 == 2);
-        expect(some_variable == -1, "Some variable was supposed to be -1");
-        expect(-4 < 1, should_fail = true);
+    set("Sub tests", #code {
+        expect(sub(1, 1) == 0);
+        x := sub(20, 10);
+        y := *x;
+
+        expect(y == *x);
+        expect(<<y == 10);
+        expect(<<y == 20, should_fail = true);
+    });
+
+    set("Some tests", #code {
+        expect(1 == 1, "1 didn't equal 1");
+
+        x := 10;
+        y := 20;
+        y -= x;
+
+        expect(y == 10);
     });
 }
 
