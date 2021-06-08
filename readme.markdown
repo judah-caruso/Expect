@@ -1,6 +1,6 @@
 # Expect
 
-Compile-time testing framework for the Jai language.
+Compile-time testing module for the Jai language.
 
 # Usage
 
