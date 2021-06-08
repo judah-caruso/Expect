@@ -35,3 +35,7 @@ See `test.jai` for more examples.
 
 This was originally written using a very old version of Jai. Only the necessary steps to get it compiling
 on the latest version have been taken. I will work to clean this up and improve it soon.
+
+# License
+
+MIT
