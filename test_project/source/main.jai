@@ -1,10 +1,7 @@
-#load "module.jai";
-
-main :: () {}
 add :: (x: int, y: int) -> int { return x + y; }
 sub :: (x: int, y: int) -> int { return x - y; }
 
-#run {
+#if RUN_TESTS #run {
     set("Add tests", #code {
         x := add(10, 20);
         y := *x;
@@ -26,12 +23,12 @@ sub :: (x: int, y: int) -> int { return x - y; }
     });
 
     set("Some tests", #code {
-        expect(1 == 1, "1 didn't equal 1");
+        a := Some_Struct.{ x = 10 };
+        b := Some_Struct.{ x = 10 };
 
-        x := 10;
-        y := 20;
-        y -= x;
-
-        expect(y == 10);
+        expect(a == b, "Structs were not the same!");
     });
 }
+
+#load "../../module.jai";
+#load "some_file.jai";

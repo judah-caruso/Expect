@@ -124,7 +124,6 @@ set :: (name: string, $code: Code, exit_on_first_fail := true, loc := #caller_lo
 
                         case .LITERAL; {
                             literal := cast(*Code_Literal)expr;
-                            print("Literal: %\n", literal.value_type);
                             array_add(exprs, "literal check");
                             continue it;
                         }
@@ -182,7 +181,6 @@ expect :: (expr: bool, note := "", note_args: ..Any, should_fail := false, loc :
 {
     filename := condense_path(loc.fully_pathed_filename);
 
-    // Bandaid for now
     print("\t[%] % %:% :: ", formatInt(`total_tests + 1, minimum_digits = 3), filename, loc.line_number, loc.character_number);
 
     if `total_tests >= `__expr_strings.count {
@@ -312,9 +310,7 @@ to_casey_case :: (convert: string, separate_words_with_underscores := false) -> 
     return builder_to_string(*builder);
 }
 
-// Set to 'true' to run tests for 'expect'
-
-#if !true #run {
+#if RUN_TESTS #run {
     set("Expect vs assert", #code {
         // Tests that are expected to pass
         expect(1 == 1);
@@ -350,6 +346,7 @@ to_casey_case :: (convert: string, separate_words_with_underscores := false) -> 
 
     set("Casey case conversion", #code {
         str: string = ---;
+
         {
             str = "hello_world";
             expect(to_casey_case(str) == "HelloWorld");
