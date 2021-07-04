@@ -1,8 +1,10 @@
 # Expect
 
-Compile-time testing module for the Jai language.
+A compile-time testing module for the Jai language, allowing you to easily
+write and run tests without them getting in the way. 
 
 # Usage
+
 
 ```c++
 #import "Expect";
@@ -11,7 +13,7 @@ add :: (x: int, y: int) -> int { return x + y; }
 sub :: (x: int, y: int) -> int { return x - y; }
 
 #run {
-    set("Add tests", #code {
+    test("Add", #code {
         x := add(10, 20);
         y := *x;
         z := *x;
@@ -21,64 +23,73 @@ sub :: (x: int, y: int) -> int { return x - y; }
         expect(add(1, 2) == 3);
     });
 
-    set("Sub tests", #code {
+    test("Sub", #code {
         expect(sub(1, 1) == 0);
         x := sub(20, 10);
         y := *x;
 
         expect(y == *x);
         expect(<<y == 10);
-        expect(<<y == 20, should_fail = true);
+        expect(<<y == 20, expected_to_fail = true);
     });
 
-    set("Some tests", #code {
+    test("Other", #code {
         expect(1 == 1, "1 didn't equal 1");
 
         x := 10;
         y := 20;
         y -= x;
 
-        expect(y == 10);
-    });
+        expect(y > 10, "expected y to > 10, instead was %", y);
+    }, halt_on_fail = true);
 }
 
-// Alternate usage
-#placeholder RUN_TESTS; // Provide this via build
-#if RUN_TESTS #run {
+// Recommended usage
+#if RUN_TESTS #run { // Provide this in your build file.
     // ...
 }
 ```
 
-Output:
+Sample Output:
 
 ```
-> Running sets
+> Running tests
 
-> Test :: Add tests
-        [001] expect/test.jai 9:9 :: equality check OK
-        [002] expect/test.jai 13:9 :: equality check OK
-        [003] expect/test.jai 14:9 :: logical and check OK
-> 3/3 test(s) passed! Set took 0.001705 seconds
+> Add :: some_program.jai 185:5
+        [000] some_program.jai 190:09 pass
+        [001] some_program.jai 191:09 pass
+        [002] some_program.jai 192:09 pass
+> 3/3 tests passed. Time: 0.00065 seconds
 
-> Test :: Sub tests
-        [001] expect/test.jai 18:9 :: equality check OK
-        [002] expect/test.jai 21:9 :: equality check OK
-        [003] expect/test.jai 22:9 :: equality check OK
-        [004] expect/test.jai 24:9 :: equality check FAIL (expected failure)
-> 4/4 test(s) passed! Set took 0.002176 seconds
+> Sub :: some_program.jai 195:5
+        [000] some_program.jai 196:09 pass
+        [001] some_program.jai 200:09 pass
+        [002] some_program.jai 201:09 pass
+        [003] some_program.jai 202:09 pass
+> 4/4 tests passed. Time: 0.000788 seconds
 
-> Test :: Some tests
-        [001] expect/test.jai 28:9 :: equality check OK
-        [002] expect/test.jai 33:9 :: equality check OK
-> 2/2 test(s) passed! Set took 0.001112 seconds
+> Other :: some_program.jai 205:5
+        [000] some_program.jai 206:09 pass
+        [001] some_program.jai 212:09 fail :: expected y to be > 10, instead was 10
+
+In workspace #2 ("Target Program"):
+some_program.jai:212,9: Error: Testing halted due to failed expectation!
+
+    y -= x;
+    expect(y > 10, "expected y to be > 10, instead was %", y);
 ```
 
-See `test.jai` for more examples.
+See `tests/` for more examples.
 
-# Note
 
-This was originally written using a very old version of Jai. Only the necessary steps to get it compiling
-on the latest version have been taken. I will work to clean this up and improve it soon.
+# Notes
+
+The original version of this module analyzed the expression passed to `expect`,
+allowing it to provide information about the call (attempt to dereference a null
+pointer, which kind of comparison was passed, etc.). The current version does
+**not** do this as the utility/usefulness of the introspection wasn't clear in
+practice. If I find a use for it, it will be re-added.
+
 
 # License
 
