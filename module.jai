@@ -24,7 +24,7 @@ expect :: (expr: bool, error_message := "", args: ..Any, expected_to_fail := fal
     }
 
     append(*builder, ifx expected_to_fail " unexpected pass" else " fail");
-    if iteration > 0 print_to_builder(*builder, ", interation %", iteration);
+    if iteration > 0 print_to_builder(*builder, ", iteration %", iteration);
 
     if error_message.count {
         append(*builder, " :: ");
@@ -41,7 +41,7 @@ expect :: (expr: bool, error_message := "", args: ..Any, expected_to_fail := fal
     return false;
 }
 
-test :: (test_name: string, body: Code, halt_on_fail := false, loc := #caller_location) #expand {
+test :: (test_name: string, body: Code, halt_on_fail := true, loc := #caller_location) #expand {
     if tests_ran == 0 log("> Running tests\n\n");
 
     filename := condense_path(loc.fully_pathed_filename);
@@ -124,9 +124,7 @@ condense_path :: (path: string) -> string {
 
 // Tests for expect itself
 #if false #run {
-    options := get_build_options();
-    options.output_type = .NO_OUTPUT;
-    set_build_options(options);
+    set_build_options_dc(.{ do_output = false });
 
     test("Condense Path", #code {
         path: string = ---;
@@ -145,7 +143,7 @@ condense_path :: (path: string) -> string {
 
         path = "//\\\\\\\\\\\\\\\\\\\\////\\\\\\\\";
         expect(condense_path(path) == "\\");
-    }, halt_on_fail = true);
+    });
 }
 
 #import "Basic";

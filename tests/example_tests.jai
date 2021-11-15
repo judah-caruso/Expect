@@ -59,7 +59,7 @@ main :: () {
     // This is a simple way to do that:
     test("Loops (expected to fail)", #code {
         timeouts := 0;
-        timeout_period := 250; // our 'TTL'
+        timeout_period := 500; // our 'TTL'
 
         for 1..100 {
             x := it;
@@ -87,7 +87,7 @@ main :: () {
     // Tests can rely on previous tests
     test("Check request values (expected to fail)", #code {
         for bad_request_values {
-            expect(it <= 0, "Request with value % unexpectedly failed in previous test!", it);
+            expect(it <= 0, "Request % (value %) unexpectedly failed in previous test!", it_index, it);
         }
     });
 
